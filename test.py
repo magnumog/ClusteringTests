@@ -1,6 +1,9 @@
 from pymongo import MongoClient
 from sklearn import cluster, datasets
-
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn.cluster import KMeans
 
 def connectToDatabase(URI):
     client = MongoClient(URI)
@@ -33,7 +36,7 @@ def loadAccounts(accounts):
 def clusterAccounts(users):
     accounts = users['data']
     print accounts
-    k_means = cluster.KMeans(n_clusters=2)
+    k_means = cluster.KMeans(n_clusters=8)
     k_means.fit(accounts)
     print k_means.labels_[::1]
     #iris = datasets.load_iris()
@@ -46,6 +49,58 @@ def clusterAccounts(users):
     #print iris
     #print X_iris
 
+def visulize(users):
+    account = users['data']
+    y = cluster.KMeans(account)
+    estimator = {'users_3': KMeans(n_clusters=3),
+                 'users_8': KMeans(n_clusters=8),
+                 'users_bad_init': KMeans(n_clusters=3,n_init=1,init='random')
+                 }
+    fignum=1
+    for name, est in estimator.items():
+        fig = plt.figure(fignum,figsize=(4,3))
+        plt.clf()
+        ax = Axes3D(fig,rect=[0,0,2,2], elev=48,azim=134)
+
+        plt.cla()
+        est.fix(account)
+        labels = est.labels_
+
+        ax.scatter(account[:, 3], account[:, 0], account[:, 2], c=labels.astype(np.float))
+        ax.w_xaxis.set_ticklabels([])
+        ax.w_yaxis.set_ticklabels([])
+        ax.w_zaxis.set_ticklabels([])
+        ax.set_xlabel('ting')
+        ax.set_ylabel('ting 2')
+        ax.set_zlabel('ting 3')
+        fignum = fignum + 1
+    fig = plt.figure(fignum, figsize=(4, 3))
+    plt.clf()
+    ax = Axes3D(fig, rect=[0, 0, .95, 1], elev=48, azim=134)
+
+    plt.cla()
+
+    for name, label in [('ting', 0),
+                        ('ting 1', 1),
+                        ('ting 3', 2)]:
+        ax.text3D(account[y == label, 3].mean(),
+                  account[y == label, 0].mean() + 1.5,
+                  account[y == label, 2].mean(), name,
+                  horizontalalignment='center',
+                  bbox=dict(alpha=.5, edgecolor='w', facecolor='w'))
+    # Reorder the labels to have colors matching the cluster results
+    y = np.choose(y, [1, 2, 0]).astype(np.float)
+    ax.scatter(account[:, 3], account[:, 0], account[:, 2], c=y)
+
+    ax.w_xaxis.set_ticklabels([])
+    ax.w_yaxis.set_ticklabels([])
+    ax.w_zaxis.set_ticklabels([])
+    ax.set_xlabel('Petal width')
+    ax.set_ylabel('Sepal length')
+    ax.set_zlabel('Petal length')
+    plt.show()
+
+
 
 def loadData(filename):
     f = file(filename,'r')
@@ -53,11 +108,13 @@ def loadData(filename):
     for line in f:
         users.append(line.split(' '))
     f.close()
-    k_means = cluster.KMeans(n_clusters=9)
-    k_means.fit(users)
-    print k_means.labels_[::1]
+    d = dict()
+    d.setdefault('data',users)
+    #k_means = cluster.KMeans(n_clusters=9)
+    #k_means.fit(users)
+    #print k_means.labels_[::1]
     #print k_means.score()
-    return users
+    return d
 
 def printAccounts(Accounts):
     for account in Accounts:
@@ -144,6 +201,8 @@ def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
     #connectToDatabase(MONGODB_URI)
     users = loadData('users.txt')
+    clusterAccounts(users)
+    visulize(users)
 
 main()
 
