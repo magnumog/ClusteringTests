@@ -8,11 +8,14 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.cluster import KMeans
 from sklearn import datasets
 
+
 np.random.seed(5)
 
 centers = [[1, 1], [-1, -1], [1, -1]]
 iris = datasets.load_iris()
 X = iris.data
+print X
+print X[:,3]
 y = iris.target
 
 estimators = {'k_means_iris_3': KMeans(n_clusters=3),
