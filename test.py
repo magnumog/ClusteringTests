@@ -3,7 +3,9 @@ from sklearn import cluster, datasets
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import offsetbox
 from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
 
 def connectToDatabase(URI):
     client = MongoClient(URI)
@@ -35,75 +37,41 @@ def loadAccounts(accounts):
 
 def clusterAccounts(users):
     accounts = users['data']
-    print accounts
-    k_means = cluster.KMeans(n_clusters=8)
+    #print accounts
+    k_means = cluster.KMeans(n_clusters=4)
     k_means.fit(accounts)
     print k_means.labels_[::1]
-    #iris = datasets.load_iris()
-    #X_iris = iris.data
-    #y_iris = iris.target
-    #k_means = cluster.KMeans(n_clusters=3)
-    #k_means.fit(X_iris)
-    #print(k_means.labels_[::10])
-    #print(y_iris[::10])
-    #print iris
-    #print X_iris
+    return k_means.predict(accounts)
 
-def visulize(users):
+def visulize(users, clusters):
     account = users['data']
-    print account
-    y = cluster.KMeans(account)
-    estimators = {'k_means_iris_3': KMeans(n_clusters=3),
-                  'k_means_iris_8': KMeans(n_clusters=8),
-                  'k_means_iris_bad_init': KMeans(n_clusters=3, n_init=1,
-                                                  init='random')}
-
-
-    fignum = 1
-    for name, est in estimators.items():
-        fig = plt.figure(fignum, figsize=(4, 3))
-        plt.clf()
-        ax = Axes3D(fig, rect=[0, 0, .95, 1], elev=48, azim=134)
-
-        plt.cla()
-        est.fit(account)
-        labels = est.labels_
-
-        ax.scatter(account[:, 3], account[:, 0], account[:, 2], c=labels.astype(np.float))
-
-        ax.w_xaxis.set_ticklabels([])
-        ax.w_yaxis.set_ticklabels([])
-        ax.w_zaxis.set_ticklabels([])
-        ax.set_xlabel('Petal width')
-        ax.set_ylabel('Sepal length')
-        ax.set_zlabel('Petal length')
-        fignum = fignum + 1
-    fig = plt.figure(fignum, figsize=(4, 3))
-    plt.clf()
-    ax = Axes3D(fig, rect=[0, 0, .95, 1], elev=48, azim=134)
-
-    plt.cla()
-
-    for name, label in [('ting', 0),
-                        ('ting 1', 1),
-                        ('ting 3', 2)]:
-        ax.text3D(account[y == label, 3].mean(),
-                  account[y == label, 0].mean() + 1.5,
-                  account[y == label, 2].mean(), name,
-                  horizontalalignment='center',
-                  bbox=dict(alpha=.5, edgecolor='w', facecolor='w'))
-    # Reorder the labels to have colors matching the cluster results
-    y = np.choose(y, [1, 2, 0]).astype(np.float)
-    ax.scatter(account[:, 3], account[:, 0], account[:, 2], c=y)
-
-    ax.w_xaxis.set_ticklabels([])
-    ax.w_yaxis.set_ticklabels([])
-    ax.w_zaxis.set_ticklabels([])
-    ax.set_xlabel('Petal width')
-    ax.set_ylabel('Sepal length')
-    ax.set_zlabel('Petal length')
+    X = np.array(account)
+    #print X
+    model = TSNE(n_components=2,random_state=0)
+    np.set_printoptions(suppress=True)
+    bilde = model.fit_transform(X)
+    plt.scatter(bilde[:,0], bilde[:,1])
+    model3D = TSNE(n_components=3,random_state=0)
+    bilde3D = model3D.fit_transform(X)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    #print bilde
+    i = 0
+    for datapunkt in bilde3D:
+        print clusters[i]
+        if clusters[i] == 0:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2],c='r',marker='^')
+        elif clusters[i]==1:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2],c='g',marker='^')
+        elif clusters[i]==2:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2],c='b',marker='^')
+        else:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2], c='b', marker='o')
+        i= i+1
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
     plt.show()
-
 
 
 def loadData(filename):
@@ -205,8 +173,8 @@ def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
     #connectToDatabase(MONGODB_URI)
     users = loadData('users.txt')
-    clusterAccounts(users)
-    visulize(users)
+    clusters = clusterAccounts(users)
+    visulize(users,clusters)
 
 main()
 
