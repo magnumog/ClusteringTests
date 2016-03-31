@@ -117,13 +117,10 @@ def loadData(filename):
     users = []
     for line in f:
         users.append(line.split(' '))
+        #print line.split(' ')
     f.close()
     d = dict()
     d.setdefault('data',users)
-    #k_means = cluster.KMeans(n_clusters=9)
-    #k_means.fit(users)
-    #print k_means.labels_[::1]
-    #print k_means.score()
     return d
 
 def printAccounts(Accounts):
@@ -210,7 +207,7 @@ def printAccounts(Accounts):
 def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
     #connectToDatabase(MONGODB_URI)
-    users = loadData('users.txt')
+    users = loadData('fixedUsers.txt')
     clusters = clusterAccounts(users)
     visulize(users,clusters)
 
