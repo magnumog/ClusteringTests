@@ -38,7 +38,7 @@ def loadAccounts(accounts):
 def clusterAccounts(users):
     accounts = users['data']
     #print accounts
-    k_means = cluster.KMeans(n_clusters=4)
+    k_means = cluster.KMeans(n_clusters=10)
     k_means.fit(accounts)
     print k_means.labels_[::1]
     return k_means.predict(accounts)
@@ -46,18 +46,44 @@ def clusterAccounts(users):
 def visulize(users, clusters):
     account = users['data']
     X = np.array(account)
-    #print X
     model = TSNE(n_components=2,random_state=0)
     np.set_printoptions(suppress=True)
-    bilde = model.fit_transform(X)
-    plt.scatter(bilde[:,0], bilde[:,1])
+    reduserteData = model.fit_transform(X)
+    #plt.scatter(bilde[:,0], bilde[:,1],c='r',marker='^')
+    i=0
+    for datapunkt in reduserteData:
+        if clusters[i] == 0:
+            plt.scatter(datapunkt[0],datapunkt[1],c='r',marker='^')
+        elif clusters[i] == 1:
+            plt.scatter(datapunkt[0],datapunkt[1],c='g',marker='^')
+        elif clusters[i] == 2:
+            plt.scatter(datapunkt[0],datapunkt[1],c='b',marker='^')
+        elif clusters[i] == 3:
+            plt.scatter(datapunkt[0],datapunkt[1],c='r',marker='o')
+        elif clusters[i] == 4:
+            plt.scatter(datapunkt[0],datapunkt[1],c='g',marker='o')
+        elif clusters[i] == 5:
+            plt.scatter(datapunkt[0],datapunkt[1],c='b',marker='o')
+        elif clusters[i] == 6:
+            plt.scatter(datapunkt[0],datapunkt[1],c='r',marker='+')
+        elif clusters[i] == 7:
+            plt.scatter(datapunkt[0],datapunkt[1],c='g',marker='+')
+        elif clusters[i] == 8:
+            plt.scatter(datapunkt[0],datapunkt[1],c='b',marker='+')
+        else:
+            plt.scatter(datapunkt[0],datapunkt[1], c='r', marker='*')
+        i=i+1
+    plt.xlabel('X Label')
+    plt.ylabel('Y Label')
+
+
     model3D = TSNE(n_components=3,random_state=0)
-    bilde3D = model3D.fit_transform(X)
+    reduserteData3D = model3D.fit_transform(X)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     #print bilde
     i = 0
-    for datapunkt in bilde3D:
+    for datapunkt in reduserteData3D:
         print clusters[i]
         if clusters[i] == 0:
             ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2],c='r',marker='^')
@@ -65,8 +91,20 @@ def visulize(users, clusters):
             ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2],c='g',marker='^')
         elif clusters[i]==2:
             ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2],c='b',marker='^')
-        else:
+        elif clusters[i]==3:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2], c='r', marker='o')
+        elif clusters[i]==4:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2], c='g', marker='o')
+        elif clusters[i]==5:
             ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2], c='b', marker='o')
+        elif clusters[i]==6:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2], c='r', marker='+')
+        elif clusters[i]==7:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2], c='g', marker='+')
+        elif clusters[i]==8:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2], c='b', marker='+')
+        else:
+            ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2], c='r', marker='*')
         i= i+1
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
