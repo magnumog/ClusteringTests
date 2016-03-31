@@ -62,6 +62,7 @@ def writeToFile(users, filename):
         for attribut in user:
             line = line + str(attribut) + " "
         f.write(line)
+    f.close()
 
 def main():
     users = readData('brukerData.txt')

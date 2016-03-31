@@ -17,28 +17,73 @@ def connectToDatabase(URI):
     #print cursor.count()
     users, usernames = loadAccounts(cursor)
     #print users
-    clusterAccounts(users)
-    print usernames
+    predictedClusters = clusterAccounts(users)
+    #print usernames
     #printAccounts(cursor)
+    visulize(users,predictedClusters)
     client.close()
-    print "Finished"
     #db.drop_collection('accounts')
 
 def loadAccounts(accounts):
     usernames = []
     array = []
     for account in accounts:
-        array.append([str(account['musicCountry']), str(account['musicAlternative'])])
+        array.append([str(getGenderValue(account['gender'])),str(getAgeGroup(account['ageGroup'])),
+                      #str(account['country']), str(account['state']),
+                      str(account['musicAlternative']), str(account['musicBlues']), str(account['musicChildren']),
+                      str(account['musicCountry']), str(account['musicDanceEMD']), str(account['musicElectronic']),
+                      str(account['musicHipHopRap']), str(account['musicJazz']), str(account['musicOpera']),
+                      str(account['musicPop']), str(account['musicRAndBSoul']), str(account['musicReggae']),
+                      str(account['musicRock']), str(account['museumHistory']), str(account['museumTheme']),
+                      str(account['museumArt']), str(account['movieAction']), str(account['movieAdventure']),
+                      str(account['movieAnimation']), str(account['movieBiography']), str(account['movieComedy']),
+                      str(account['movieCrime']), str(account['movieDocumentary']), str(account['movieDrama']),
+                      str(account['movieFamily']), str(account['movieFantasy']), str(account['movieHistory']),
+                      str(account['movieHorror']), str(account['movieMusical']), str(account['movieRomance']),
+                      str(account['movieSciFi']), str(account['movieSport']), str(account['movieThriller']),
+                      str(account['movieWar']), str(account['movieWestern']), str(account['nightlifePub']),
+                      str(account['nightlifeBrewery']), str(account['nightlifeBar']), str(account['nightlifeSports']),
+                      str(account['nightlifeDive']), str(account['nightlifeWine']), str(account['nightlifeLounge']),
+                      str(account['nightlifeNightclub']), str(account['restaurantBurger']), str(account['restaurantCafe']),
+                      str(account['restaurantScandinavian']), str(account['restaurantGeneral']), str(account['restaurantItalian']),
+                      str(account['restaurantSushi']), str(account['restaurantBBQ']), str(account['restaurantIndian']),
+                      str(account['restaurantMexican']), str(account['restaurantVegetarian']), str(account['restaurantSteakhouse']),
+                      str(account['restaurantTapas']), str(account['restaurantOriental'])])
         usernames.append(str(account['username']))
     #print array
     d = dict()
     d.setdefault('data',array)
     return d, usernames
 
+def getGenderValue(gender):
+    if(gender=='Mann'):
+        return 0
+    elif(gender=='Kvinne'):
+        return 1
+    else:
+        return 2
+
+def getAgeGroup(ageGroup):
+    age = str(ageGroup)
+    if(age=='0-19'):
+        return 0
+    elif(age=='20-29'):
+        return 1
+    elif(age=='30-39'):
+        return 2
+    elif(age=='40-49'):
+        return 3
+    elif(age=='50-59'):
+        return 4
+    elif(age=='60-69'):
+        return 5
+    else:
+        return 6
+
 def clusterAccounts(users):
     accounts = users['data']
     #print accounts
-    k_means = cluster.KMeans(n_clusters=10)
+    k_means = cluster.KMeans(n_clusters=2)
     k_means.fit(accounts)
     print k_means.labels_[::1]
     return k_means.predict(accounts)
@@ -206,10 +251,10 @@ def printAccounts(Accounts):
 
 def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
-    #connectToDatabase(MONGODB_URI)
-    users = loadData('fixedUsers.txt')
-    clusters = clusterAccounts(users)
-    visulize(users,clusters)
+    connectToDatabase(MONGODB_URI)
+    #users = loadData('fixedUsers.txt')
+    #clusters = clusterAccounts(users)
+    #visulize(users,clusters)
 
 main()
 
