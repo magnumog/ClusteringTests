@@ -171,35 +171,39 @@ def visulize3D(users,clusters):
     ax.set_zlabel('Z Label')
     plt.show()
 
-def insertClustersToDatabase(URI):
+def insertClustersToDatabase(URI, username, cluster):
     client = MongoClient('localhost', 27017)
     db = client.tourism_mongoose
     clusterAccount = db.clusters
-    #post = { "Username" : "ma" ,
-    #       "Date" : datetime.utcnow() }
-    #post_id = clusterAccount.insert_one(post).inserted_id
+    post = { "username" : username ,
+             "cluster" : cluster,
+           "updateTime" : datetime.utcnow() }
+    post_id = clusterAccount.insert_one(post).inserted_id
     cursor = clusterAccount.find()
-    for data in cursor:
-        print "Username " + str(data['Username'])
-        print "Date " + str(data['Date'])
 
-def updateClusterUseresInDatabase(URI):
+def updateClusterUseresInDatabase(URI, username, cluster):
     client = MongoClient('localhost', 27017)
     db = client.tourism_mongoose
     clusterAccount = db.clusters.update_one(
-        { "Username" : "ma" },
-        {"$set": {"Date" : datetime.utcnow()}}
+        { "username" : username },
+        {"$set": {"cluster" : cluster, "updateTime" : datetime.utcnow()}}
     )
     if(clusterAccount.modified_count==1):
         print "Success"
     else:
         print "Fail"
-    cursor = db.clusters.find()
-    for data in cursor:
-        print "Username " + str(data['Username'])
-        print "Date " + str(data['Date'])
+        insertClustersToDatabase(URI, username, cluster)
 
-
+def getAllUsersInCluser(URI, clusterNr):
+    client = MongoClient('localhost', 27017)
+    db = client.tourism_mongoose
+    cursor = db.clusters.aggregate(
+        [
+            {"$match": {"cluster" : "2"}}
+        ]
+    )
+    for document in cursor:
+        print document['username']
 
 def loadData(filename):
     f = file(filename,'r')
@@ -304,8 +308,9 @@ def main():
     #visulize2D(users,reduced)
     #reduced = reduce(users,3)
     #visulize3D(users,reduced)
-    #insertClustersToDatabase(MONGODB_URI)
-    updateClusterUseresInDatabase(MONGODB_URI)
+    #insertClustersToDatabase(MONGODB_URI,"ma","2")
+    updateClusterUseresInDatabase(MONGODB_URI,"ua", "2")
+    getAllUsersInCluser(MONGODB_URI,"2")
 
 main()
 
