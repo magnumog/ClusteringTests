@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from sklearn import cluster, datasets
+from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -20,7 +21,8 @@ def connectToDatabase(URI):
     predictedClusters = clusterAccounts(users)
     #print usernames
     #printAccounts(cursor)
-    visulize(users,predictedClusters)
+    visulize2D(users,predictedClusters)
+    visulize3D(users,predictedClusters)
     client.close()
     #db.drop_collection('accounts')
 
@@ -169,6 +171,21 @@ def visulize3D(users,clusters):
     ax.set_zlabel('Z Label')
     plt.show()
 
+def insertClustersToDatabase(URI):
+    client = MongoClient('localhost', 27017)
+    db = client.tourism_mongoose
+    print db
+    print client.database_names()
+    print db.collection_names()
+    clusterAccount = db.clusters
+    #post = { "Username" : "ma" ,
+    #        "Date" : datetime.utcnow() }
+    #post_id = clusterAccount.insert_one(post).inserted_id
+    cursor = clusterAccount.find()
+    for data in cursor:
+        print "Username " + str(data['Username'])
+        print "Date " + str(data['Date'])
+
 
 def loadData(filename):
     f = file(filename,'r')
@@ -265,14 +282,15 @@ def printAccounts(Accounts):
 def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
     #connectToDatabase(MONGODB_URI)
-    users = loadData('fixedUsers.txt')
-    clusters = clusterAccounts(users)
-    visulize2D(users,clusters)
-    visulize3D(users,clusters)
-    reduced = reduce(users,2)
-    visulize2D(users,reduced)
-    reduced = reduce(users,3)
-    visulize3D(users,reduced)
+    #users = loadData('fixedUsers.txt')
+    #clusters = clusterAccounts(users)
+    #visulize2D(users,clusters)
+    #visulize3D(users,clusters)
+    #reduced = reduce(users,2)
+    #visulize2D(users,reduced)
+    #reduced = reduce(users,3)
+    #visulize3D(users,reduced)
+    insertClustersToDatabase(MONGODB_URI)
 
 main()
 
