@@ -174,17 +174,31 @@ def visulize3D(users,clusters):
 def insertClustersToDatabase(URI):
     client = MongoClient('localhost', 27017)
     db = client.tourism_mongoose
-    print db
-    print client.database_names()
-    print db.collection_names()
     clusterAccount = db.clusters
     #post = { "Username" : "ma" ,
-    #        "Date" : datetime.utcnow() }
+    #       "Date" : datetime.utcnow() }
     #post_id = clusterAccount.insert_one(post).inserted_id
     cursor = clusterAccount.find()
     for data in cursor:
         print "Username " + str(data['Username'])
         print "Date " + str(data['Date'])
+
+def updateClusterUseresInDatabase(URI):
+    client = MongoClient('localhost', 27017)
+    db = client.tourism_mongoose
+    clusterAccount = db.clusters.update_one(
+        { "Username" : "ma" },
+        {"$set": {"Date" : datetime.utcnow()}}
+    )
+    if(clusterAccount.modified_count==1):
+        print "Success"
+    else:
+        print "Fail"
+    cursor = db.clusters.find()
+    for data in cursor:
+        print "Username " + str(data['Username'])
+        print "Date " + str(data['Date'])
+
 
 
 def loadData(filename):
@@ -290,7 +304,8 @@ def main():
     #visulize2D(users,reduced)
     #reduced = reduce(users,3)
     #visulize3D(users,reduced)
-    insertClustersToDatabase(MONGODB_URI)
+    #insertClustersToDatabase(MONGODB_URI)
+    updateClusterUseresInDatabase(MONGODB_URI)
 
 main()
 
