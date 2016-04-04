@@ -85,13 +85,23 @@ def clusterAccounts(users):
     #print accounts
     k_means = cluster.KMeans(n_clusters=2)
     k_means.fit(accounts)
-    print k_means.labels_[::1]
+    #print k_means.labels_[::1]
     return k_means.predict(accounts)
 
-def visulize(users, clusters):
+def reduce(users,dimensions):
     account = users['data']
     X = np.array(account)
-    model = TSNE(n_components=2,random_state=0)
+    model = TSNE(n_components=dimensions,random_state=0)
+    np.set_printoptions(suppress=True)
+    reduserteData = model.fit_transform(X)
+    k_means = cluster.KMeans(n_clusters=2)
+    k_means.fit(reduserteData)
+    return k_means.predict(reduserteData)
+
+def visulize2D(users, clusters):
+    account = users['data']
+    X = np.array(account)
+    model = TSNE(n_components=3,random_state=0)
     np.set_printoptions(suppress=True)
     reduserteData = model.fit_transform(X)
     #plt.scatter(bilde[:,0], bilde[:,1],c='r',marker='^')
@@ -120,8 +130,11 @@ def visulize(users, clusters):
         i=i+1
     plt.xlabel('X Label')
     plt.ylabel('Y Label')
+    plt.show()
 
-
+def visulize3D(users,clusters):
+    account = users['data']
+    X = np.array(account)
     model3D = TSNE(n_components=3,random_state=0)
     reduserteData3D = model3D.fit_transform(X)
     fig = plt.figure()
@@ -129,7 +142,7 @@ def visulize(users, clusters):
     #print bilde
     i = 0
     for datapunkt in reduserteData3D:
-        print clusters[i]
+        #print clusters[i]
         if clusters[i] == 0:
             ax.scatter(datapunkt[0],datapunkt[1],datapunkt[2],c='r',marker='^')
         elif clusters[i]==1:
@@ -251,10 +264,15 @@ def printAccounts(Accounts):
 
 def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
-    connectToDatabase(MONGODB_URI)
-    #users = loadData('fixedUsers.txt')
-    #clusters = clusterAccounts(users)
-    #visulize(users,clusters)
+    #connectToDatabase(MONGODB_URI)
+    users = loadData('fixedUsers.txt')
+    clusters = clusterAccounts(users)
+    visulize2D(users,clusters)
+    visulize3D(users,clusters)
+    reduced = reduce(users,2)
+    visulize2D(users,reduced)
+    reduced = reduce(users,3)
+    visulize3D(users,reduced)
 
 main()
 
