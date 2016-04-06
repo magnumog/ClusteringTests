@@ -103,7 +103,7 @@ def reduce(users,dimensions):
 def visulize2D(users, clusters):
     account = users['data']
     X = np.array(account)
-    model = TSNE(n_components=3,random_state=0)
+    model = TSNE(n_components=2,random_state=0)
     np.set_printoptions(suppress=True)
     reduserteData = model.fit_transform(X)
     #plt.scatter(bilde[:,0], bilde[:,1],c='r',marker='^')
@@ -179,7 +179,6 @@ def insertClustersToDatabase(URI, username, cluster):
              "cluster" : cluster,
            "updateTime" : datetime.utcnow() }
     post_id = clusterAccount.insert_one(post).inserted_id
-    cursor = clusterAccount.find()
 
 def updateClusterUseresInDatabase(URI, username, cluster):
     client = MongoClient('localhost', 27017)
@@ -191,7 +190,6 @@ def updateClusterUseresInDatabase(URI, username, cluster):
     if(clusterAccount.modified_count==1):
         print "Success"
     else:
-        print "Fail"
         insertClustersToDatabase(URI, username, cluster)
 
 def getAllUsersInCluser(URI, clusterNr):
@@ -199,7 +197,7 @@ def getAllUsersInCluser(URI, clusterNr):
     db = client.tourism_mongoose
     cursor = db.clusters.aggregate(
         [
-            {"$match": {"cluster" : "2"}}
+            {"$match": {"cluster" : clusterNr}}
         ]
     )
     for document in cursor:
