@@ -222,12 +222,15 @@ def visualize3DReduceBeforeCluster(users,numberOfClusters):
 def readUsersFromFile(filename):
     f = file(filename,'r')
     users = []
+    username = []
     for line in f:
-        users.append(line.split(' '))
+        data = line.split(' ')
+        username.append(data.pop(0))
+        users.append(data)
     f.close()
     d = dict()
     d.setdefault('data',users)
-    return d
+    return d, username
 
 def insertUserAndClusterToDatabase(URI,username, cluster):
     client = MongoClient(URI)
@@ -251,19 +254,32 @@ def updateUserAndClusterToDatabase(URI,username,cluster):
 def updateDatabase(URI,users,clusters):
     for i in range(0,len(users)):
         updateUserAndClusterToDatabase(URI, users[i], clusters[i])
+    print "Database Updated"
+
+def getUsersInClusters(URI,clusterNumber):
+    client = MongoClient(URI)
+    db = client.get_default_database()
+    cursor = db.clusters.aggregate(
+        [
+            {"$match": {"cluster" : str(clusterNumber)}}
+        ]
+    )
+    for document in cursor:
+        print document['username']
 
 
 def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
     #cursor = getUsersFromDatabase(MONGODB_URI)
     #users, username = getUsersFromCursor(cursor)
-    users = readUsersFromFile('fixedUsers.txt')
-    #clusters = clusterUsers(users, 2, False)
-    visualize2DClusterBeforeReduction(users,5)
-    visualize3DClusterBeforeReduction(users,5)
+    #users, username = readUsersFromFile('fixedUsers.txt')
+    #clusters = clusterUsers(users, 8, False)
+    #visualize2DClusterBeforeReduction(users,5)
+    #visualize3DClusterBeforeReduction(users,5)
     #visualize2DReduceBeforeCluster(users,5)
     #visualize3DReduceBeforeCluster(users,5)
     #updateDatabase(MONGODB_URI,username,clusters)
+    getUsersInClusters(MONGODB_URI, 2)
 
 
 main()
