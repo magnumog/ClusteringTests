@@ -294,7 +294,6 @@ def printAccounts(Accounts):
         print "  "
         #print account
 
-
 def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
     #connectToDatabase(MONGODB_URI)
@@ -307,7 +306,7 @@ def main():
     #reduced = reduce(users,3)
     #visulize3D(users,reduced)
     #insertClustersToDatabase(MONGODB_URI,"ma","2")
-    updateClusterUseresInDatabase(MONGODB_URI,"ua", "2")
+    #updateClusterUseresInDatabase(MONGODB_URI,"ua", "2")
     getAllUsersInCluser(MONGODB_URI,"2")
 
 main()

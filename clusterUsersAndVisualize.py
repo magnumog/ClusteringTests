@@ -69,9 +69,9 @@ def getAgeGroup(ageGroup):
     else:
         return 6
 
-def clusterUsers(users, numberOfClusters,reducedData):
+def clusterUsers(users, numberOfClusters, isDataReducedDim):
     accounts=None
-    if(reducedData==False):
+    if(isDataReducedDim==False):
         accounts = users['data']
     else:
         accounts=users
@@ -270,15 +270,16 @@ def getUsersInClusters(URI,clusterNumber):
 
 def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
-    #cursor = getUsersFromDatabase(MONGODB_URI)
-    #users, username = getUsersFromCursor(cursor)
+    numberOfClusters = 2
+    cursor = getUsersFromDatabase(MONGODB_URI)
+    users, username = getUsersFromCursor(cursor)
     #users, username = readUsersFromFile('fixedUsers.txt')
-    #clusters = clusterUsers(users, 8, False)
-    #visualize2DClusterBeforeReduction(users,5)
-    #visualize3DClusterBeforeReduction(users,5)
-    #visualize2DReduceBeforeCluster(users,5)
-    #visualize3DReduceBeforeCluster(users,5)
-    #updateDatabase(MONGODB_URI,username,clusters)
+    clusters = clusterUsers(users, 2, False)
+    visualize2DClusterBeforeReduction(users,2)
+    visualize3DClusterBeforeReduction(users,2)
+    visualize2DReduceBeforeCluster(users,2)
+    visualize3DReduceBeforeCluster(users,2)
+    updateDatabase(MONGODB_URI,username,clusters)
     getUsersInClusters(MONGODB_URI, 2)
 
 
