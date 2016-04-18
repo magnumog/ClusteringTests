@@ -271,16 +271,16 @@ def getUsersInClusters(URI,clusterNumber):
 def main():
     MONGODB_URI = 'mongodb://localhost:27017/tourism_mongoose'
     numberOfClusters = 2
-    cursor = getUsersFromDatabase(MONGODB_URI)
-    users, username = getUsersFromCursor(cursor)
+    #cursor = getUsersFromDatabase(MONGODB_URI)
+    #users, username = getUsersFromCursor(cursor)
     #users, username = readUsersFromFile('fixedUsers.txt')
-    clusters = clusterUsers(users, 2, False)
-    visualize2DClusterBeforeReduction(users,2)
-    visualize3DClusterBeforeReduction(users,2)
-    visualize2DReduceBeforeCluster(users,2)
-    visualize3DReduceBeforeCluster(users,2)
-    updateDatabase(MONGODB_URI,username,clusters)
-    getUsersInClusters(MONGODB_URI, 2)
+    #clusters = clusterUsers(users, numberOfClusters, False)
+    #visualize2DClusterBeforeReduction(users,numberOfClusters)
+    #visualize3DClusterBeforeReduction(users,numberOfClusters)
+    #visualize2DReduceBeforeCluster(users,numberOfClusters)
+    #visualize3DReduceBeforeCluster(users,numberOfClusters)
+    #updateDatabase(MONGODB_URI,username,clusters)
+    #getUsersInClusters(MONGODB_URI, 2)
 
 
 main()
